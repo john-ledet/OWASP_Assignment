@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h2>Sign In</h2>
+    <form id="signInForm">
+      <input id="userEmail" type="text" placeholder="Enter email"><br><br>
+      <input id="userPass" type="password" placeholder="Enter password"><br><br>
+      <button type="submit">Submit</button>
+    </form>
+    <p id="status"></p>
+    <script>
+      const signInForm = document.getElementById("signInForm");
+      const statusText = document.getElementById("status");
+      signInForm.addEventListener("submit", async function(event) {
+        event.preventDefault();
+        const enteredEmail = document.getElementById("userEmail").value.trim();
+        const enteredPass = document.getElementById("userPass").value.trim();
+        if (enteredEmail === "" || enteredPass === "") {
+          statusText.textContent = "Please fill in all fields";
+          return;
+        }
+        if (enteredEmail.indexOf("@") === -1) {
+          statusText.textContent = "Email format is invalid";
+          return;
+        }
+        if (enteredPass.length < 8) {
+          statusText.textContent = "Password must have at least 8 characters";
+          return;
+        }
+        try {
+          const response = await fetch("http://localhost:3000/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              email: enteredEmail,
+              password: enteredPass
+            })
+          });
+          const result = await response.json();
+          statusText.textContent = result.message;
+        } catch (error) {
+          statusText.textContent = "Could not connect to server";
+        }
+      });
+    </script>
+  </body>
+</html>
